@@ -39,6 +39,24 @@ jobs:
       - name: Write protected configuration
         shell: bash
         run: printf '%s' "$DOUYIN_CONFIG" > config.json
+      - name: Restore compressed login state
+        shell: bash
+        env:
+          DOUYIN_STORAGE_STATE_GZIP: ${{ secrets.DOUYIN_STORAGE_STATE_GZIP }}
+        run: |
+          python - <<'PY'
+          import base64
+          import gzip
+          import json
+          import os
+          from pathlib import Path
+
+          encoded = os.environ.get("DOUYIN_STORAGE_STATE_GZIP")
+          if encoded:
+              state = gzip.decompress(base64.b64decode(encoded, validate=True))
+              json.loads(state)
+              Path("storage-state.json").write_bytes(state)
+          PY
       - name: Write multi-account configuration
         shell: bash
         env:
