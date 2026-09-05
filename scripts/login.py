@@ -10,6 +10,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from playwright.async_api import async_playwright
+from app.browser import open_private_messages
 
 
 DOUYIN_URL = "https://www.douyin.com/"
@@ -21,11 +22,12 @@ async def login() -> None:
         page = await context.new_page()
         await page.goto(DOUYIN_URL, wait_until="domcontentloaded")
         await _open_login(page)
-        print("请在浏览器中扫码登录。登录完成并看到抖音首页后，回到终端按 Enter。")
+        print("请在浏览器中扫码登录，并确认能打开私信。完成后，回到终端按 Enter。")
         await asyncio.to_thread(input)
         await page.goto(DOUYIN_URL, wait_until="domcontentloaded")
         await _verify_home_login(page)
-        await context.storage_state(path="storage-state.json.tmp")
+        await open_private_messages(page)
+        await context.storage_state(path="storage-state.json.tmp", indexed_db=True)
         await browser.close()
         Path("storage-state.json.tmp").replace("storage-state.json")
         print("登录状态已保存到 storage-state.json")

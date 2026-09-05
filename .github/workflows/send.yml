@@ -23,10 +23,12 @@ jobs:
       contents: read
     env:
       DOUYIN_COOKIE: ${{ secrets.DOUYIN_COOKIE }}
+      DOUYIN_STORAGE_STATE: ${{ secrets.DOUYIN_STORAGE_STATE }}
       DOUYIN_CONFIG: ${{ secrets.DOUYIN_CONFIG }}
       DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}
       DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}
       HEADLESS: "true"
+      TRACE: "false"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -118,5 +120,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: douyin-failure-${{ github.run_id }}
-          path: artifacts/
+          path: |
+            artifacts/run.log
+            artifacts/result.json
           retention-days: 3
